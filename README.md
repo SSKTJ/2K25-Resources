@@ -6,4 +6,4 @@ Attempts have been made to compile all the older repos into one repo.
 We have taken material from:
 - [VijayrajS' repository](https://github.com/VijayrajS/iiitprevpapers/)
 - [sanyamseac's repository](https://github.com/sanyamseac/exams2k24)
-- https://github.com/IIITH-Resources
+- [IIIT-H Resources](https://github.com/IIITH-Resources)
