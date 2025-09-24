@@ -4,6 +4,6 @@ This repository contains/tries to contain all the past papers/assignments/quizze
 Attempts have been made to compile all the older repos into one repo.
 
 We have taken material from:
-- https://github.com/VijayrajS/iiitprevpapers/tree/master
-- https://github.com/sanyamseac
+- [VijayrajS' repository](https://github.com/VijayrajS/iiitprevpapers/)
+- [sanyamseac's repository](https://github.com/sanyamseac/exams2k24)
 - https://github.com/IIITH-Resources
