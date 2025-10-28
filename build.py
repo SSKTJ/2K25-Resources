@@ -1,12 +1,12 @@
 import os
 
-with open("build.html", "w") as F:
+with open("index.html", "w") as F:
     pass
 
 
 def listfolders(directory, index):
     if len(os.listdir(directory)) == 0:
-        with open("build.html", "a") as F:
+        with open("index.html", "a") as F:
             F.write("</div>\n")
         return
 
@@ -18,7 +18,7 @@ def listfolders(directory, index):
                 print(f'"." is not in {i}, so it is a folder')
                 flag = 1
                 # print("  " * index + i)
-                with open("build.html", "a") as F:
+                with open("index.html", "a") as F:
                     F.write(f"""
                         <div class="h3-folder">
                             <input
@@ -37,16 +37,16 @@ def listfolders(directory, index):
 
             if "." in i and i != ".DS_Store":
                 print(f'"." is in {i}, so it is a file')
-                with open("build.html", "a") as F:
+                with open("index.html", "a") as F:
                     F.write(f"""
                         <a href="{directory + "/" + i}"><h3>{i}</h3></a>
                         """)
             if flag:
-                with open("build.html", "a") as F:
+                with open("index.html", "a") as F:
                     F.write("</div>\n" * (index))
 
 
-with open("build.html", "a") as F:
+with open("index.html", "a") as F:
     F.write("""
         <!doctype html>
         <html>
