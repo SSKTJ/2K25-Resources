@@ -89,3 +89,8 @@ h1 {
     margin-bottom: 10px;
     margin-left: 10px;
 }
+
+.file {
+    text-decoration: none;
+    color: rgb(189, 217, 255);
+}
