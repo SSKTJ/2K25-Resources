@@ -28,7 +28,7 @@ def listfolders(directory, index):
                                 onchange="checkState(this)"
                             />
                             <label for="{i}">
-                                <span><b>{i}</b></span>
+                                <span><b>📁{i}</b></span>
                             </label>
                                 <div class="spanner">\n
                         """)
