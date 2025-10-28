@@ -1,0 +1,91 @@
+body {
+    background-color: rgb(53, 58, 64);
+    color: whitesmoke;
+    font-family: monospace;
+}
+
+h1 {
+    font-size: 40px;
+    color: whitesmoke;
+}
+
+#navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    text-decoration: none;
+    text-decoration-line: none;
+    color: whitesmoke;
+}
+
+#navbar h1 {
+    align-self: left;
+}
+
+#links {
+    /* justify-content: right;
+    justify-self: right; */
+    display: flex;
+    margin-right: 50px;
+    align-items: center;
+}
+
+.click-btn {
+    font-size: 24px;
+    margin-left: 20px;
+    border-width: 2px;
+    border-style: solid;
+    border-color: whitesmoke;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    padding-left: 5px;
+    padding-right: 5px;
+    transition: 0.3s;
+    color: whitesmoke;
+    text-decoration: none;
+    text-decoration-line: none;
+}
+
+#links a {
+    text-decoration: none;
+    text-decoration-line: none;
+}
+#navbar a {
+    text-decoration: none;
+    text-decoration-line: none;
+}
+
+.click-btn:hover {
+    background-color: whitesmoke;
+    color: rgb(53, 58, 64);
+    transition: 0.3s;
+}
+
+.h3-folder span {
+    font-size: 30px;
+    margin-bottom: 10px;
+    font-style: strong;
+}
+
+.h3-folder {
+    margin-bottom: 10px;
+}
+
+.spanner {
+    display: none;
+    position: relative;
+    font-size: 24px;
+    margin-left: 20px;
+    margin-top: 10px;
+}
+
+.h4-folder span {
+    font-size: 25px;
+    margin-bottom: 10px;
+    font-style: strong;
+}
+
+.h4-folder {
+    margin-bottom: 10px;
+    margin-left: 10px;
+}
