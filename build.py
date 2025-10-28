@@ -35,15 +35,17 @@ def listfolders(directory, index):
                 s = directory + "/" + i
                 listfolders(s, index + 1)
 
+                with open("index.html", "a") as F:
+                    F.write("</div>\n")
+
             if "." in i and i != ".DS_Store":
                 print(f'"." is in {i}, so it is a file')
                 with open("index.html", "a") as F:
                     F.write(f"""
                         <a href="{directory + "/" + i}"><h3>{i}</h3></a>
                         """)
-            if flag:
-                with open("index.html", "a") as F:
-                    F.write("</div>\n" * (index))
+        with open("index.html", "a") as F:
+            F.write("</div>\n")
 
 
 with open("index.html", "a") as F:
