@@ -56,6 +56,10 @@ with open("index.html", "a") as F:
                 <title>2K25-Resources</title>
                 <link rel="stylesheet" href="styles.css" />
                 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+                <meta charset="UTF-8">
+                <meta name="description" content="Resources for IIIT Hyderabad">
+                <meta name="author" content="SSKTJ">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
             </head>
 
             <body>
