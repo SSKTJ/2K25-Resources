@@ -28,7 +28,7 @@ def listfolders(directory, index):
                                 onchange="checkState(this)"
                             />
                             <label for="{i}">
-                                <span><b>📁{i}</b></span>
+                                <span><b>📁 {i}</b></span>
                             </label>
                                 <div class="spanner">\n
                         """)
@@ -42,7 +42,7 @@ def listfolders(directory, index):
                 print(f'"." is in {i}, so it is a file')
                 with open("index.html", "a") as F:
                     F.write(f"""
-                        <a href="{directory + "/" + i}"><h3>{i}</h3></a>
+                        <a href="{directory + "/" + i}" class="file"><h3>{i}</h3></a>
                         """)
         with open("index.html", "a") as F:
             F.write("</div>\n")
