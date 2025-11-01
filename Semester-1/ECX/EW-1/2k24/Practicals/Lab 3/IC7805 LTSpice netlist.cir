@@ -1,0 +1,408 @@
+.SUBCKT UA7805C Input Output Ground
+ x1 Input Output Ground x_LM78XX PARAMS:
+ + Av_feedback=1665, R1_Value=1020
+.ENDS
+*$
+*
+* MANUFACTURERS PART NO.= UA7805 (TEXAS INTERNATIONAL)
+* SUBTYPE: REGULATOR
+* THIS FILE CONTAINS A PRE-RAD TEMP. DEPENDENT MODEL OF THE UA7805
+* REGULATOR.
+*
+*------------------------------------------------------------------------------
+*
+*
+* THIS MODEL CAN BE USED FROM -55 C TO 125 C WITH THE .TEMP STATEMENT. IT
+* INCLUDES POWER-UP AND POWER-DOWN EFFECTS.
+* IT MAY BE NECESSARY TO SET ITL1=300 ITL2=300 WITH THE .OPTIONS COMMAND
+* FOR CONVERGENCE. THESE SETTINGS DETERMINE THE NUMBER OF ITERATIONS
+* ALLOWED FOR THE CALCULATION OF THE DC AND BIAS PT VALUES WHEN THE
+* STARTING POINT IS CONSIDERED "BLIND" OR AN "EDUCATED GUESS".
+* OTHER SETTINGS MAY WORK, BUT HAVE NOT BEEN TESTED YET.
+*
+*
+*
+.SUBCKT 7805 1 2 3
+*    | | |
+* IN   | |
+* OUT    |
+* GND
+*
+
+ 
+
+ 
+
+ 
+
+*** VOLTAGE REFERENCE AND BIAS CURRENT SECTION ***
+DZ1 4 1 DZ1
+.MODEL DZ1 D (
++ IS = 1E-14
++ RS = 0
++ N = 1
++ TT = 0
++ CJO = 0
++ VJ = 1
++ M = .5
++ EG = 1.11
++ XTI = 3
++ KF = 0
++ AF = 1
++ FC = .5
++ BV = 1.5
++ IBV = 1E-10
++ ISR = 0
++ NR = 2
++ IKF = 9.9999E+13
++ NBV = 0.01
++ IBVL = 0
++ NBVL = 1
++ TIKF = 0
++ TBV1 = -0.001481
++ TBV2 = -1.85167E-5
++ TRS1 = 0
++ TRS2 = 0
++ )
+RQ 4 17 112090 TC=0.003483, -4.9343E-6
+RR 17 18 4.7 TC=0.003449, -5.495E-6
+DR 16 18 DR
+.MODEL DR D (
++ IS = 1E-14
++ RS = 0
++ N = 1
++ TT = 0
++ CJO = 0
++ VJ = 1
++ M = .5
++ EG = 1.11
++ XTI = 3
++ KF = 0
++ AF = 1
++ FC = .5
++ BV = 1.2651
++ IBV = 1E-10
++ ISR = 0
++ NR = 2
++ IKF = 9.9999E+13
++ NBV = 0.01
++ IBVL = 0
++ NBVL = 1
++ TIKF = 0
++ TBV1 = 1.805303E-4
++ TBV2 = -2.461378E-6
++ TRS1 = 0
++ TRS2 = 0
++ )
+RZ 16 18 1MEG
+*** Modified L1, removed Model IND1 - KH
+L1 16 3 0.796M TC1=0.00236 TC2=1.24436E-5
+*** KH *** .MODEL IND1 IND(L=1 IL1=0 IL2=0 TC1=0.00236 TC2=1.24436E-5)
+*** ERROR AMPLIFIER SECTION ***
+EP 22 3 17 15 300
+RO 22 6 25
+DC- 3 6 DCLAMP
+DC+ 6 19 DCLAMP
+.MODEL DCLAMP D(
++ IS = 1E-14
++ RS = 0
++ N = 1
++ TT = 0
++ CJO = 0
++ VJ = 1
++ M = .5
++ EG = 1.11
++ XTI = 3
++ KF = 0
++ AF = 1
++ FC = .5
++ BV = 9.9999E+13
++ IBV = 1E-10
++ ISR = 0
++ NR = 2
++ IKF = 9.9999E+13
++ NBV = 1
++ IBVL = 0
++ NBVL = 1
++ TIKF = 0
++ TBV1 = 0
++ TBV2 = 0
++ TRS1 = 0
++ TRS2 = 0
++ )
+V+ 19 23 DC -1
+E+ 23 3 1 3 1
+RP 6 7 50
+CPZ 7 3 0.5U
+*** QUIESCENT CURRENT ***
+GB 1 9 17 3 0.5002M
+RQUIES 12 3 3396 TC=0.006886, 4.655264E-5
+*** SHORT CIRCUIT AND FOLDBACK CURRENT ***
+DBL 9 8 DBL
+.MODEL DBL D(
++ IS = 1E-4
++ RS = 0
++ N = 1
++ TT = 0
++ CJO = 0
++ VJ = 1
++ M = .5
++ EG = 0
++ XTI = 0
++ KF = 0
++ AF = 1
++ FC = .5
++ BV = 9.9999E+13
++ IBV = 1E-10
++ ISR = 0
++ NR = 2
++ IKF = 9.9999E+13
++ NBV = 1
++ IBVL = 0
++ NBVL = 1
++ TIKF = 0
++ TBV1 = 0
++ TBV2 = 0
++ TRS1 = 0
++ TRS2 = 0
++ )
+EB 8 3 7 3 2
+RC 1 14 0.2
+DC 14 13 DC
+.MODEL DC D(
++ IS = 1E-14
++ RS = 0
++ N = 1.617
++ TT = 0
++ CJO = 0
++ VJ = 1
++ M = .5
++ EG = 1.11
++ XTI = 3
++ KF = 0
++ AF = 1
++ FC = .5
++ BV = 9.9999E+13
++ IBV = 1E-10
++ ISR = 0
++ NR = 2
++ IKF = 9.9999E+13
++ NBV = 1
++ IBVL = 0
++ NBVL = 1
++ TIKF = 0
++ TBV1 = 0
++ TBV2 = 0
++ TRS1 = 0
++ TRS2 = 0
++ )
+RB 9 11 100
+QP 13 11 5 QP
+.MODEL QP NPN(
++ IS = 1E-12
++ BF = 70K
++ NF = 1
++ VAF = 150
++ IKF = 9.9999E+13
++ ISE = 0
++ NE = 1.5
++ BR = 1
++ NR = 1
++ VAR = 9.9999E+13
++ IKR = 9.9999E+13
++ ISC = 0
++ NC = 2
++ RB = 0
++ IRB = 9.9999E+13
++ RBM = 0
++ RE = 0
++ RC = 0
++ CJE = 0
++ VJE = .75
++ MJE = .33
++ TF = 0
++ XTF = 0
++ VTF = 9.9999E+13
++ ITF = 0
++ PTF = 0
++ CJC = 0
++ VJC = .75
++ MJC = .33
++ XCJC = 1
++ TR = 0
++ CJS = 0
++ VJS = .75
++ MJS = 0
++ XTB = 0
++ EG = 1.11
++ XTI = 3
++ KF = 0
++ AF = 1
++ FC = .5
++ NK = .5
++ ISS = 0
++ NS = 1
++ QCO = 0
++ RCO = 0
++ VO = 10
++ GAMMA = 1E-11
++ TRE1 = 0
++ TRE2 = 0
++ TRB1 = 0
++ TRB2 = 0
++ TRM1 = 0
++ TRM2 = 0
++ TRC1 = 0
++ TRC2 = 0
++ )
+DCL 9 10 DCL
+.MODEL DCL D(
++ IS = 1E-4
++ RS = 0
++ N = 2
++ TT = 0
++ CJO = 0
++ VJ = 1
++ M = .5
++ EG = 1.11
++ XTI = 3
++ KF = 0
++ AF = 1
++ FC = .5
++ BV = 9.9999E+13
++ IBV = 1E-10
++ ISR = 0
++ NR = 2
++ IKF = 9.9999E+13
++ NBV = 1
++ IBVL = 0
++ NBVL = 1
++ TIKF = 0
++ TBV1 = 0
++ TBV2 = 0
++ TRS1 = 0
++ TRS2 = 0
++ )
+QCL 10 20 12 QLIMIT
+.MODEL QLIMIT NPN(
++ IS = 1E-16
++ BF = 100
++ NF = 1
++ VAF = 9.9999E+13
++ IKF = 9.9999E+13
++ ISE = 0
++ NE = 1.5
++ BR = 1
++ NR = 1
++ VAR = 9.9999E+13
++ IKR = 9.9999E+13
++ ISC = 0
++ NC = 2
++ RB = 0
++ IRB = 9.9999E+13
++ RBM = 0
++ RE = 0
++ RC = 0
++ CJE = 0
++ VJE = .75
++ MJE = .33
++ TF = 0
++ XTF = 0
++ VTF = 9.9999E+13
++ ITF = 0
++ PTF = 0
++ CJC = 0
++ VJC = .75
++ MJC = .33
++ XCJC = 1
++ TR = 0
++ CJS = 0
++ VJS = .75
++ MJS = 0
++ XTB = 0
++ EG = 1.11
++ XTI = 3
++ KF = 0
++ AF = 1
++ FC = .5
++ NK = .5
++ ISS = 0
++ NS = 1
++ QCO = 0
++ RCO = 0
++ VO = 10
++ GAMMA = 1E-11
++ TRE1 = 0
++ TRE2 = 0
++ TRB1 = 0
++ TRB2 = 0
++ TRM1 = 0
++ TRM2 = 0
++ TRC1 = 0
++ TRC2 = 0
++ )
+RSC 5 12 .5076
+RBCL 20 5 1600
+RFBCL 1 21 51.17K TC= 0.002528, -1.5164E-5
+DZFB 20 21 DZFB
+.MODEL DZFB D(
++ IS = 1E-14
++ RS = 0
++ N = 1
++ TT = 0
++ CJO = 0
++ VJ = 1
++ M = .5
++ EG = 1.11
++ XTI = 3
++ KF = 0
++ AF = 1
++ FC = .5
++ BV = 15.26
++ IBV = 1E-10
++ ISR = 0
++ NR = 2
++ IKF = 9.9999E+13
++ NBV = 0.01
++ IBVL = 0
++ NBVL = 1
++ TIKF = 0
++ TBV1 = -9.5474743E-4
++ TBV2 = 1.478994E-5
++ TRS1 = 0
++ TRS2 = 0
++ )
+R24 15 3 600
+R23 12 15 1850
+*** OUTPUT RESISTANCE ***
+ROUT 12 2 0.036 TC=0.002616, -1.50463E-5
+DDIS 12 1 DMOD
+.MODEL DMOD D(
++ IS = 1E-14
++ RS = 0
++ N = 0.7
++ TT = 0
++ CJO = 0
++ VJ = 1
++ M = .5
++ EG = 1.11
++ XTI = 3
++ KF = 0
++ AF = 1
++ FC = .5
++ BV = 9.9999E+13
++ IBV = 1E-10
++ ISR = 0
++ NR = 2
++ IKF = 9.9999E+13
++ NBV = 1
++ IBVL = 0
++ NBVL = 1
++ TIKF = 0
++ TBV1 = 0
++ TBV2 = 0
++ TRS1 = 0
++ TRS2 = 0
++ )
+.ENDS 7805
+*$

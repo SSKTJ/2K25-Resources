@@ -1,0 +1,202 @@
+[
+    {
+        "id": "e6f42defc39bd72b",
+        "type": "tab",
+        "label": "Flow 1",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "023f29a372f510aa",
+        "type": "mqtt out",
+        "z": "e6f42defc39bd72b",
+        "name": "",
+        "topic": "encoding/inp",
+        "qos": "2",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "9889e41caec8836a",
+        "x": 630,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "db3623c8673b8331",
+        "type": "ui_text_input",
+        "z": "e6f42defc39bd72b",
+        "name": "",
+        "label": "Encoding Input",
+        "tooltip": "",
+        "group": "7b81a1f53d8b7cf2",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "mode": "text",
+        "delay": "0",
+        "topic": "encoding/inp",
+        "sendOnBlur": true,
+        "className": "",
+        "topicType": "msg",
+        "x": 260,
+        "y": 260,
+        "wires": [
+            [
+                "023f29a372f510aa"
+            ]
+        ]
+    },
+    {
+        "id": "06dcac72acc4dd33",
+        "type": "ui_text",
+        "z": "e6f42defc39bd72b",
+        "group": "7b81a1f53d8b7cf2",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Decoded output:",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": 16,
+        "color": "#000000",
+        "x": 640,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "239230a6353794b8",
+        "type": "mqtt in",
+        "z": "e6f42defc39bd72b",
+        "name": "",
+        "topic": "decoding/out",
+        "qos": "2",
+        "datatype": "utf8",
+        "broker": "9889e41caec8836a",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 250,
+        "y": 320,
+        "wires": [
+            [
+                "06dcac72acc4dd33"
+            ]
+        ]
+    },
+    {
+        "id": "df4fc504d8ae2f54",
+        "type": "mqtt in",
+        "z": "e6f42defc39bd72b",
+        "name": "",
+        "topic": "arduino/serial",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "9889e41caec8836a",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 250,
+        "y": 380,
+        "wires": [
+            [
+                "a108449a58453b0b"
+            ]
+        ]
+    },
+    {
+        "id": "a108449a58453b0b",
+        "type": "ui_text",
+        "z": "e6f42defc39bd72b",
+        "group": "7b81a1f53d8b7cf2",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Encoding: ",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": 16,
+        "color": "#000000",
+        "x": 620,
+        "y": 380,
+        "wires": []
+    },
+    {
+        "id": "e878d3d286fa1572",
+        "type": "link in",
+        "z": "e6f42defc39bd72b",
+        "name": "link in 1",
+        "links": [],
+        "x": 125,
+        "y": 260,
+        "wires": [
+            [
+                "db3623c8673b8331"
+            ]
+        ]
+    },
+    {
+        "id": "9889e41caec8836a",
+        "type": "mqtt-broker",
+        "name": "mqtt windows",
+        "broker": "192.168.182.38",
+        "port": "1883",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "7b81a1f53d8b7cf2",
+        "type": "ui_group",
+        "name": "Morse Code Encoder Decoder Interface",
+        "tab": "beb8cb91d96e18f8",
+        "order": 1,
+        "disp": true,
+        "width": "10",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "beb8cb91d96e18f8",
+        "type": "ui_tab",
+        "name": "Home",
+        "icon": "dashboard",
+        "disabled": false,
+        "hidden": false
+    }
+]

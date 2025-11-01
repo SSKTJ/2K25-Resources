@@ -1,0 +1,13 @@
+Version 4
+SymbolType BLOCK
+RECTANGLE Normal 67 97 -64 -63
+TEXT -49 24 Left 3 LM317
+PIN -64 -16 LEFT 8
+PINATTR PinName Inp
+PINATTR SpiceOrder 1
+PIN 64 -16 RIGHT 8
+PINATTR PinName Out
+PINATTR SpiceOrder 2
+PIN 0 96 BOTTOM 8
+PINATTR PinName Adj
+PINATTR SpiceOrder 3
