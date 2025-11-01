@@ -1,0 +1,49 @@
+LTspice 24.0.12 for Windows
+Circuit: * C:\Users\srich\OneDrive\Important Docs\02 IIITH Docs\02 IIITH Classwork\1-1\06 Electronics Workshop 1\Lab 3\7805 Reg.asc
+Start Time: Mon Oct  7 10:26:25 2024
+solver = Normal
+Maximum thread count: 8
+tnom = 27
+temp = 27
+method = modified trap
+u1:dbl: Activation energy, Eg=0, too small, limited to 0.1
+Direct Newton iteration for .op point succeeded.
+Semiconductor Device Operating Points:
+                        --- Diodes ---
+Name:    d:u1:z1     d:u1:r      d:u1:c-     d:u1:c+     d:u1:bl
+Model:   u1:dz1       u1:dr     u1:dclamp   u1:dclamp    u1:dbl
+Id:     -1.09e-04   -1.08e-04   -2.85e-12   -1.12e-11    6.35e-04
+Vd:     -1.50e+00   -1.27e+00   -2.84e+00   -1.12e+01    5.16e-02
+Req:     2.37e+00    2.40e+00    1.00e+12    1.00e+12    3.52e+01
+CAP:     0.00e+00    0.00e+00    0.00e+00    0.00e+00    0.00e+00
+
+Name:    d:u1:c      d:u1:cl    d:u1:zfb    d:u1:dis
+Model:    u1:dc      u1:dcl      u1:dzfb     u1:dmod
+Id:      8.76e-03    5.91e-13   -9.86e-12   -9.87e-12
+Vd:      1.15e+00    3.06e-10   -9.85e+00   -9.86e+00
+Req:     4.78e+00    5.17e+02    1.00e+12    1.00e+12
+CAP:     0.00e+00    0.00e+00    0.00e+00    0.00e+00
+
+                        --- Bipolar Transistors ---
+Name:     q:u1:p      q:u1:cl
+Model:     u1:qp     u1:qlimit
+Ib:       1.19e-07   -5.86e-13
+Ic:       8.76e-03    5.91e-13
+Vbe:      5.91e-01    4.45e-03
+Vbc:     -8.11e+00   -5.91e-01
+Vce:      8.70e+00    5.95e-01
+BetaDC:   7.38e+04   -1.01e+00
+Gm:       3.39e-01    4.59e-15
+Rpi:      2.18e+05    1.00e+12
+Rx:       0.00e+00    0.00e+00
+Ro:       1.81e+04    2.15e+24
+Cbe:      0.00e+00    0.00e+00
+Cbc:      0.00e+00    0.00e+00
+Cjs:      0.00e+00    0.00e+00
+BetaAC:   7.38e+04    4.59e-03
+Cbx:      0.00e+00    0.00e+00
+Ft:       0.00e+00    0.00e+00
+
+
+Total elapsed time: 0.108 seconds.
+
