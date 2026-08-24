@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Processor Simulator</title>
+    <title>Processor Simulator - Bulk Load</title>
     <style>
         :root {
             --bg-color: #1e1e1e;
@@ -11,9 +11,10 @@
             --border-color: #3e3e42;
             --text-main: #cccccc;
             --accent: #007acc;
-            --highlight-pc: #264f26; /* Green background for PC */
-            --highlight-sp: #004e8c; /* Blue background for Stack */
+            --highlight-pc: #264f26;
+            --highlight-sp: #004e8c;
             --changed: #d7ba7d;
+            --pause-color: #dcdcaa;
         }
 
         * { box-sizing: border-box; }
@@ -32,13 +33,12 @@
 
         h1 { margin: 0 0 10px 0; font-size: 1.2rem; color: #fff; }
 
-        /* Grid Layout */
         .layout {
             display: grid;
-            grid-template-columns: 350px 1fr 320px; /* Left Editor, Center CPU, Right Memory */
+            grid-template-columns: 350px 1fr 320px;
             gap: 10px;
             flex: 1;
-            min-height: 0; /* Fix for flex scrolling */
+            min-height: 0;
         }
 
         .panel {
@@ -62,7 +62,7 @@
         }
 
         /* Editor Area */
-        textarea {
+        textarea#editor {
             flex: 1;
             background: #1e1e1e;
             color: #9cdcfe;
@@ -85,9 +85,12 @@
             cursor: pointer;
             font-family: inherit;
             border-radius: 2px;
+            min-width: 60px;
         }
         button:hover:not(:disabled) { background: #1177bb; }
         button:disabled { background: #444; color: #888; cursor: not-allowed; }
+        button.paused { background: #a88e28; color: black; }
+        button.paused:hover { background: #c9aa2e; }
 
         /* CPU Visualization */
         .cpu-board {
@@ -148,10 +151,38 @@
             z-index: 1;
         }
 
-        /* Flags */
         .flags-container { grid-column: 2; display: flex; justify-content: center; gap: 5px; margin-top: 5px; z-index: 1;}
         .flag { width: 20px; height: 20px; background: #333; border: 1px solid #555; font-size: 10px; display: flex; justify-content: center; align-items: center; }
         .flag.active { background: #f48771; color: #000; font-weight: bold; }
+
+        /* Memory Tools */
+        .mem-tools {
+            padding: 8px;
+            background: #2d2d30;
+            border-bottom: 1px solid #3e3e42;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .mem-row-input { display: flex; gap: 5px; align-items: center; }
+        .mem-input {
+            background: #1e1e1e;
+            border: 1px solid #3e3e42;
+            color: #ccc;
+            padding: 4px;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .mem-textarea {
+            background: #1e1e1e;
+            border: 1px solid #3e3e42;
+            color: #ce9178;
+            padding: 4px;
+            font-family: monospace;
+            font-size: 12px;
+            resize: vertical;
+            height: 50px;
+        }
 
         /* Memory Table */
         .memory-table-container {
@@ -160,29 +191,21 @@
             background: #1e1e1e;
         }
         
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 12px;
-            table-layout: fixed;
-        }
-        
+        table { width: 100%; border-collapse: collapse; font-size: 12px; table-layout: fixed; }
         th { position: sticky; top: 0; background: #333; color: #fff; text-align: left; padding: 4px; z-index: 2; }
         td { padding: 2px 4px; border-bottom: 1px solid #333; color: #aaa; }
         
         .mem-addr { color: #569cd6; width: 40px; font-family: monospace; }
-        .mem-val { color: #ce9178; width: 40px; font-weight: bold; }
+        .mem-val { color: #ce9178; width: 40px; font-weight: bold; cursor: pointer; transition: background 0.2s; }
+        .mem-val:hover { background: #333; text-decoration: underline; color: #fff; }
         .mem-ins { color: #6a9955; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
         tr:hover { background-color: #2a2d2e; }
-        
-        /* PC and SP Highlighting */
         tr.pc-row { background-color: var(--highlight-pc) !important; color: white; }
         tr.sp-row { border-left: 4px solid #007acc; background-color: rgba(0, 122, 204, 0.1); }
         tr.pc-row .mem-addr::before { content: "►"; margin-right:2px; color: #fff; }
         tr.sp-row .mem-addr::before { content: "S"; margin-right:2px; color: #569cd6; font-weight: bold; }
 
-        /* Log */
         .log-box {
             height: 80px;
             background: #111;
@@ -196,49 +219,38 @@
 </head>
 <body>
 
-    <h1>PJN Processor Simulator (Digital Systems and Microcontrollers)</h1>
+    <h1>PJN Processor Simulator (Extended)</h1>
 
     <div class="layout">
         
-        <!-- EDITOR PANEL -->
         <div class="panel">
             <div class="panel-header">Assembly Code</div>
             <textarea id="editor" spellcheck="false">
-; Memory Write Example
-; We will calculate 5 + 3 and store it in memory
+; Bulk Load Example
+; 1. Assemble & Reset
+; 2. Look at Memory Panel "Bulk Load" section
+; 3. Enter Addr: 50
+; 4. Enter Data: A1 B2 C3 04
+; 5. Click "Load Data" and scroll to addr 50
 
 START:
-  MOVI R0, 5    ; Load 5 into R0
-  MOVI R1, 3    ; Load 3 into R1
-  
-  MOVS R0       ; Move R0 to Accumulator (AR)
-  ADD  R1       ; AR = AR + R1 (5+3=8)
-  MOVD R2       ; Save result to R2
-  
-  ; Store result (8) into Memory Address 0x50 (80)
-  MOVI R3, 0x50 ; Set R3 to destination address
-  MOVS R3       ; Move address to AR (AR is used as ptr)
-  STOR R2       ; Store R2 into Mem[AR]
-  
-  ; Verify by loading it back into R4
-  LOAD R4       ; Load Mem[AR] into R4
-  
-  STOP          ; Finish
+  MOVI R0, 0x50 ; Point to data area
+  MOVS R0
+  LOAD R1       ; Load first byte we just injected
+  STOP
 </textarea>
             <div class="controls">
                 <button onclick="assemble()">Assemble & Reset</button>
                 <button onclick="step()" id="btnStep" disabled>Step</button>
-                <button onclick="run()" id="btnRun" disabled>Run</button>
+                <button onclick="toggleRun()" id="btnRun" disabled>Run</button>
                 <button onclick="resetSystem()">Reset</button>
             </div>
             <div class="log-box" id="log">Waiting for assembly...</div>
         </div>
 
-        <!-- CPU PANEL -->
         <div class="panel">
             <div class="panel-header">CPU Architecture</div>
             <div class="cpu-board">
-                <!-- Left Registers -->
                 <div style="grid-column: 1; grid-row: 1;">
                     <div class="component" id="regPC"><span class="label-display">PC</span><span class="val-display">00</span></div>
                     <div class="component" id="regIR"><span class="label-display">IR</span><span class="val-display">00</span></div>
@@ -249,10 +261,8 @@ START:
                     </div>
                 </div>
 
-                <!-- Bus -->
                 <div class="bus-visual"></div>
 
-                <!-- ALU Area -->
                 <div style="grid-column: 2; display: flex; flex-direction: column; align-items: center;">
                     <div style="height: 100px;"></div>
                     <div class="alu">ALU</div>
@@ -267,19 +277,22 @@ START:
                     </div>
                 </div>
 
-                <!-- Right Registers (R0-R11) -->
-                <div class="reg-file" style="grid-column: 3; grid-row: 1 / span 2;">
-                    <!-- Injected via JS -->
-                </div>
+                <div class="reg-file" style="grid-column: 3; grid-row: 1 / span 2;"></div>
             </div>
         </div>
 
-        <!-- MEMORY PANEL -->
         <div class="panel">
-            <div class="panel-header">
-                <span>Memory Map</span>
-                <span style="font-size: 0.7rem; color:#aaa;">Hex Values</span>
+            <div class="panel-header">Memory Map</div>
+            
+            <div class="mem-tools">
+                <div class="mem-row-input">
+                    <span style="font-size: 11px; color:#aaa;">Start Addr (Hex):</span>
+                    <input type="text" id="bulkAddr" class="mem-input" value="00" style="width: 40px;" maxlength="2">
+                    <button onclick="bulkLoad()" style="padding: 2px 8px; font-size: 11px;">Load Data</button>
+                </div>
+                <textarea id="bulkData" class="mem-textarea" placeholder="Paste Hex: A1 B2 C3..."></textarea>
             </div>
+
             <div class="memory-table-container">
                 <table id="memTable">
                     <thead>
@@ -289,45 +302,36 @@ START:
                             <th>Decoded</th>
                         </tr>
                     </thead>
-                    <tbody id="memBody">
-                        <!-- Rows generated by JS -->
-                    </tbody>
+                    <tbody id="memBody"></tbody>
                 </table>
             </div>
         </div>
 
     </div>
-
-    <div>
-    <br>
-    	<center>Made with 🤖 by Sanyam Asthana</center>
-    </div>
+    
+    <div><br><center>Made with 🤖 by Sanyam Asthana</center></div>
 
 <script>
     /* --- CONFIGURATION --- */
     const MEM_SIZE = 256;
     const REG_COUNT = 12;
 
-    // Opcode Map
     const OPCODES = {
         'nop': 0x00, 'adi': 0x01, 'sbi': 0x02, 'xri': 0x03, 'ani': 0x04, 'ori': 0x05, 'cmi': 0x06, 'stop': 0x07,
-        'ret': 0x08, // 0x08-0x0F
+        'ret': 0x08, 
         'add': 0x10, 'sub': 0x20, 'xor': 0x30, 'and': 0x40, 'or': 0x50, 'cmp': 0x60,
         'movs': 0x70, 'movd': 0x80, 'movi': 0x90, 'stor': 0xA0, 'load': 0xB0,
         'push': 0xC0, 'pop': 0xD0,
         'jmpd': 0xE0, 'jmpr': 0xE8, 'cd': 0xF0, 'cr': 0xF8
     };
 
-    // Reverse Map for Disassembly
     const OPCODE_NAMES = {};
     for (let k in OPCODES) OPCODE_NAMES[OPCODES[k]] = k.toUpperCase();
-    // Add ranges for registers
     const BASE_OPS = {
         0x10: 'ADD', 0x20: 'SUB', 0x30: 'XOR', 0x40: 'AND', 0x50: 'OR', 0x60: 'CMP',
         0x70: 'MOVS', 0x80: 'MOVD', 0x90: 'MOVI', 0xA0: 'STOR', 0xB0: 'LOAD',
         0xC0: 'PUSH', 0xD0: 'POP'
     };
-
     const CONDS = { 'u':0, 'z':1, 'nz':2, 'c':3, 'nc':4, 'p':5, 'm':6, 'op':7 };
 
     /* --- STATE --- */
@@ -337,8 +341,6 @@ START:
     let flags = { Z:0, C:0, S:0, P:0 };
     let isRunning = false;
     let timer = null;
-    
-    // For change highlighting
     let oldSys = {...sys};
     let oldRegs = new Uint8Array(REG_COUNT);
 
@@ -362,7 +364,7 @@ START:
         flags = { Z:0, C:0, S:0, P:0 };
         oldSys = {...sys};
         oldRegs.fill(0);
-        stop();
+        stopRun();
         updateUI();
         log("System Reset.");
     }
@@ -377,7 +379,6 @@ START:
         let pass1 = [];
 
         try {
-            // Pass 1: Labels & Structure
             lines.forEach((line, idx) => {
                 line = line.split(';')[0].trim();
                 if(!line) return;
@@ -394,27 +395,20 @@ START:
                 if(!OPCODES.hasOwnProperty(mne)) throw `Unknown opcode: ${mne}`;
                 
                 let size = 1;
-                // 2-byte instructions
                 if(['adi','sbi','xri','ani','ori','cmi','movi','jmpd','cd'].includes(mne)) size = 2;
-                
                 pass1.push({ addr, mne, args: tokens.slice(1), size, line: idx+1 });
                 addr += size;
                 if(addr > 255) throw "Memory overflow";
             });
 
-            // Pass 2: Code Gen
             pass1.forEach(inst => {
                 let op = OPCODES[inst.mne];
                 let val = 0;
-
-                // Two Byte Insts
                 if(inst.size === 2) {
                     if(inst.mne === 'movi') {
-                        let r = parseReg(inst.args[0]);
-                        op |= r;
+                        op |= parseReg(inst.args[0]);
                         val = parseVal(inst.args[1], labels);
                     } else if (['jmpd', 'cd'].includes(inst.mne)) {
-                        // jmpd cond, addr OR jmpd addr
                         if(inst.args.length > 1) {
                             op |= parseCond(inst.args[0]);
                             val = parseVal(inst.args[1], labels);
@@ -422,29 +416,23 @@ START:
                             val = parseVal(inst.args[0], labels);
                         }
                     } else {
-                        // arithmetic imm
                         val = parseVal(inst.args[0], labels);
                     }
                     memory[inst.addr] = op;
                     memory[inst.addr+1] = val;
-                } 
-                // One Byte Insts
-                else {
+                } else {
                     if(['jmpr','cr','ret'].includes(inst.mne)) {
                         if(inst.args.length > 0) op |= parseCond(inst.args[0]);
                     } else if (!['stop','nop'].includes(inst.mne)) {
-                        // Reg ops
                         op |= parseReg(inst.args[0]);
                     }
                     memory[inst.addr] = op;
                 }
             });
-            
             log(`Assembled ${addr} bytes.`);
             updateUI();
             document.getElementById('btnStep').disabled = false;
             document.getElementById('btnRun').disabled = false;
-            
         } catch(e) {
             log("Error: " + e);
         }
@@ -457,9 +445,7 @@ START:
         if(r>=REG_COUNT) throw "Reg out of bounds";
         return r;
     }
-    
     function parseCond(s) { return CONDS[s.toLowerCase()] || 0; }
-    
     function parseVal(s, labels) {
         if(labels[s.toUpperCase()] !== undefined) return labels[s.toUpperCase()];
         if(s.startsWith('0x')) return parseInt(s, 16);
@@ -468,14 +454,12 @@ START:
 
     /* --- EXECUTION --- */
     function step() {
-        if(sys.PC >= 256) { stop(); return; }
+        if(sys.PC >= 256) { stopRun(); return; }
         
-        // Fetch
         sys.MAR = sys.PC;
         sys.IR = memory[sys.PC];
         sys.PC++;
         
-        // Execute
         const op = sys.IR;
         const hi = op & 0xF0;
         const lo = op & 0x0F;
@@ -489,39 +473,18 @@ START:
             return flags.P;
         };
 
-        if(op === 0x07) { stop(); log("STOP reached"); return; }
-        if(op === 0x00) { /* NOP */ }
-        
-        // Imm Arith
+        if(op === 0x07) { stopRun(); log("STOP reached"); return; }
+        if(op === 0x00) { }
         else if(hi===0 && lo<=6) alu(lo, imm());
-        
-        // RET
-        else if(hi===0 && lo>=8) {
-            if(check(lo&7)) {
-                sys.SP = (sys.SP+1)&0xFF;
-                sys.PC = memory[sys.SP];
-            }
-        }
-        
-        // ALU Reg
-        else if(op>=0x10 && op<=0x6F) {
-            sys.OR = regs[lo];
-            let func = [0,'ADD','SUB','XOR','AND','OR','CMP'][hi>>4];
-            alu(func, sys.OR);
-        }
-        
-        // Data Move
+        else if(hi===0 && lo>=8) { if(check(lo&7)) { sys.SP = (sys.SP+1)&0xFF; sys.PC = memory[sys.SP]; } }
+        else if(op>=0x10 && op<=0x6F) { sys.OR = regs[lo]; let func = [0,'ADD','SUB','XOR','AND','OR','CMP'][hi>>4]; alu(func, sys.OR); }
         else if(hi===0x70) { sys.AR = regs[lo]; setFlags(sys.AR); }
         else if(hi===0x80) { if(lo<REG_COUNT) regs[lo] = sys.AR; }
         else if(hi===0x90) { if(lo<REG_COUNT) regs[lo] = imm(); }
-        else if(hi===0xA0) { sys.MAR = sys.AR; memory[sys.MAR] = regs[lo]; } // STOR
-        else if(hi===0xB0) { sys.MAR = sys.AR; if(lo<REG_COUNT) regs[lo] = memory[sys.MAR]; } // LOAD
-        
-        // Stack
+        else if(hi===0xA0) { sys.MAR = sys.AR; memory[sys.MAR] = regs[lo]; }
+        else if(hi===0xB0) { sys.MAR = sys.AR; if(lo<REG_COUNT) regs[lo] = memory[sys.MAR]; }
         else if(hi===0xC0) { memory[sys.SP] = regs[lo]; sys.SP = (sys.SP-1)&0xFF; }
         else if(hi===0xD0) { sys.SP = (sys.SP+1)&0xFF; if(lo<REG_COUNT) regs[lo] = memory[sys.SP]; }
-        
-        // Branch
         else if(hi===0xE0) { let t=imm(); if(check(lo)) sys.PC = t; }
         else if(hi===0xE8) { if(check(lo&7)) sys.PC = sys.AR; }
         else if(hi===0xF0) { let t=imm(); if(check(lo)) { pushPC(); sys.PC=t; } }
@@ -530,72 +493,112 @@ START:
         updateUI();
     }
 
-    function pushPC() {
-        memory[sys.SP] = sys.PC;
-        sys.SP = (sys.SP-1)&0xFF;
-    }
-
+    function pushPC() { memory[sys.SP] = sys.PC; sys.SP = (sys.SP-1)&0xFF; }
     function alu(op, val) {
         sys.OR = val;
-        let res = 0;
-        let a = sys.AR;
+        let res = 0, a = sys.AR;
         if(typeof op === 'number') op = ['','ADD','SUB','XOR','AND','OR','CMP'][op];
-        
         if(op==='ADD') res = a + val;
         else if(op==='SUB' || op==='CMP') res = a - val;
         else if(op==='AND') res = a & val;
         else if(op==='OR') res = a | val;
         else if(op==='XOR') res = a ^ val;
-        
         flags.Z = (res & 0xFF) === 0 ? 1 : 0;
         flags.S = (res & 0x80) ? 1 : 0;
         flags.C = (op==='ADD' && res>255) || ((op==='SUB'||op==='CMP') && a<val) ? 1 : 0;
-        let parity = (res&0xFF).toString(2).split('1').length-1;
-        flags.P = (parity%2!==0) ? 1 : 0;
-        
+        flags.P = ((res&0xFF).toString(2).split('1').length-1)%2!==0 ? 1 : 0;
         if(op!=='CMP') sys.AR = res & 0xFF;
     }
+    function setFlags(v) { flags.Z = v===0?1:0; flags.S = (v&0x80)?1:0; flags.P = ((v.toString(2).split('1').length-1)%2!==0)?1:0; }
 
-    function setFlags(v) {
-        flags.Z = v===0?1:0;
-        flags.S = (v&0x80)?1:0;
-        flags.P = ((v.toString(2).split('1').length-1)%2!==0)?1:0;
+    /* --- INTERACTION --- */
+    function toggleRun() {
+        const btn = document.getElementById('btnRun');
+        if (isRunning) { stopRun(); log("Execution Paused."); } 
+        else {
+            isRunning = true;
+            btn.innerText = "Pause";
+            btn.classList.add('paused');
+            document.getElementById('btnStep').disabled = true;
+            timer = setInterval(step, 100);
+            log("Execution Started.");
+        }
     }
 
-    /* --- UI & MEMORY RENDER --- */
-    function updateUI() {
-        const h = (n) => n.toString(16).toUpperCase().padStart(2,'0');
-        
-        // Update Registers
-        ['PC','IR','MAR','SP','AR','OR'].forEach(k => {
-            let el = document.getElementById(`reg${k}`);
-            el.querySelector('.val-display').innerText = h(sys[k]);
-            if(sys[k] !== oldSys[k]) {
-                el.classList.remove('changed');
-                void el.offsetWidth; // trigger reflow
-                el.classList.add('changed');
+    function stopRun() {
+        isRunning = false;
+        clearInterval(timer);
+        const btn = document.getElementById('btnRun');
+        btn.innerText = "Run";
+        btn.classList.remove('paused');
+        document.getElementById('btnStep').disabled = false;
+    }
+
+    /* --- EDITING --- */
+    function editMem(addr) {
+        if(isRunning) { alert("Please Pause execution first."); return; }
+        let currentVal = memory[addr].toString(16).toUpperCase().padStart(2,'0');
+        let input = prompt(`Edit Addr 0x${addr.toString(16).toUpperCase()}:`, currentVal);
+        if(input !== null) {
+            let val = parseInt(input, 16);
+            if(!isNaN(val) && val >= 0 && val <= 255) {
+                memory[addr] = val;
+                updateUI();
             }
-        });
+        }
+    }
+
+    function bulkLoad() {
+        if(isRunning) { alert("Please Pause execution first."); return; }
         
-        for(let i=0; i<REG_COUNT; i++) {
-            let el = document.getElementById(`regR${i}`);
-            el.querySelector('.val-display').innerText = h(regs[i]);
-            if(regs[i] !== oldRegs[i]) {
-                el.classList.remove('changed');
-                void el.offsetWidth;
-                el.classList.add('changed');
+        const addrStr = document.getElementById('bulkAddr').value;
+        const dataStr = document.getElementById('bulkData').value;
+        
+        let startAddr = parseInt(addrStr, 16);
+        if(isNaN(startAddr) || startAddr < 0 || startAddr > 255) {
+            alert("Invalid Start Address");
+            return;
+        }
+
+        // Split by space, comma, or newline
+        let tokens = dataStr.split(/[\s,]+/).filter(x => x);
+        let count = 0;
+        
+        for(let t of tokens) {
+            if(startAddr + count > 255) break;
+            let val = parseInt(t, 16);
+            if(!isNaN(val) && val >= 0 && val <= 255) {
+                memory[startAddr + count] = val;
+                count++;
             }
         }
         
-        // Flags
+        log(`Bulk loaded ${count} bytes starting at 0x${startAddr.toString(16).toUpperCase()}`);
+        updateUI();
+        
+        // Scroll to the start address
+        let row = document.getElementById(`memRow${startAddr}`);
+        if(row) row.scrollIntoView({block: 'center', behavior: 'smooth'});
+    }
+
+    /* --- RENDER --- */
+    function updateUI() {
+        const h = (n) => n.toString(16).toUpperCase().padStart(2,'0');
+        ['PC','IR','MAR','SP','AR','OR'].forEach(k => {
+            let el = document.getElementById(`reg${k}`);
+            el.querySelector('.val-display').innerText = h(sys[k]);
+            if(sys[k] !== oldSys[k]) { el.classList.remove('changed'); void el.offsetWidth; el.classList.add('changed'); }
+        });
+        for(let i=0; i<REG_COUNT; i++) {
+            let el = document.getElementById(`regR${i}`);
+            el.querySelector('.val-display').innerText = h(regs[i]);
+            if(regs[i] !== oldRegs[i]) { el.classList.remove('changed'); void el.offsetWidth; el.classList.add('changed'); }
+        }
         ['Z','C','S','P'].forEach(k => {
             let el = document.getElementById(`flag${k}`);
             if(flags[k]) el.classList.add('active'); else el.classList.remove('active');
         });
-        
-        oldSys = {...sys};
-        oldRegs = new Uint8Array(regs);
-        
+        oldSys = {...sys}; oldRegs = new Uint8Array(regs);
         renderMemory();
     }
 
@@ -603,43 +606,20 @@ START:
         const tbody = document.getElementById('memBody');
         let html = '';
         const h = (n) => n.toString(16).toUpperCase().padStart(2,'0');
-
         for(let i=0; i<MEM_SIZE; i++) {
             let val = memory[i];
             let cls = '';
             if(i === sys.PC) cls += 'pc-row ';
             if(i === sys.SP) cls += 'sp-row ';
-            
-            // Simple Disassembly logic for visualization
-            let decoded = '';
-            // Check exact match
-            if(OPCODE_NAMES[val]) decoded = OPCODE_NAMES[val]; 
-            // Check Reg Mask match (hi nibble)
-            else {
-                let hi = val & 0xF0;
-                if(BASE_OPS[hi]) {
-                    decoded = `${BASE_OPS[hi]} R${val & 0x0F}`;
-                } else {
-                    // Just data
-                    decoded = '.'; 
-                }
-            }
-            
-            // If previous instruction was immediate, this is data, not an instruction
-            // (This is hard to do perfectly in a simple loop without tracking state, 
-            // so we just show the naive decode or the value)
-            
+            let decoded = OPCODE_NAMES[val] || ((BASE_OPS[val&0xF0]) ? `${BASE_OPS[val&0xF0]} R${val&0x0F}` : '.');
             html += `<tr class="${cls}" id="memRow${i}">
                 <td class="mem-addr">${h(i)}</td>
-                <td class="mem-val">${h(val)}</td>
+                <td class="mem-val" onclick="editMem(${i})">${h(val)}</td>
                 <td class="mem-ins">${decoded}</td>
             </tr>`;
         }
         tbody.innerHTML = html;
-        
-        // Scroll to PC
-        let row = document.getElementById(`memRow${sys.PC}`);
-        if(row) row.scrollIntoView({block: 'center', behavior: 'auto'});
+        // Don't auto scroll on every render during bulk edits, only PC update
     }
 
     function log(msg) {
@@ -647,19 +627,6 @@ START:
         l.innerHTML += `<div>> ${msg}</div>`;
         l.scrollTop = l.scrollHeight;
     }
-    
-    function run() {
-        if(isRunning) return;
-        isRunning = true;
-        document.getElementById('btnStep').disabled=true;
-        timer = setInterval(step, 100);
-    }
-    function stop() {
-        isRunning = false;
-        clearInterval(timer);
-        document.getElementById('btnStep').disabled=false;
-    }
-
 </script>
 </body>
 </html>
