@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ESP32</title>
+</head>
+
+<body>
+    <h1>Hello from ESP32!</h1>
+    <h2 id="what"></h2>
+    <div style="padding-bottom: 100px;">
+        <button style="background-color:red; font-size:100px" id="LAUNCH" onclick="launch">LAUNCH</button>
+    </div>
+    <button style="background-color:green; font-size:40px" id="Abort">ABORT</button>
+
+
+    <script>
+        launch = document.getElementById('LAUNCH');
+        abort = document.getElementById('Abort');
+        status = document.getElementById('what');
+
+        async function launch() {
+            const responce = await fetch('/launch');
+            const text = await response.text();
+            status.innerText = text;
+
+        }
+
+        async function abort() {
+            const responce = await fetch('/abort');
+            const text = await response.text();
+            status.innerText = text;
+
+        }
+
+    </script>
+</body>
+
+</html>
